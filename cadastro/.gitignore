@@ -1,0 +1,29 @@
+
+# Dependências do Node.js
+node_modules/
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Arquivos temporários
+tmp/
+temp/
+*.tmp
+
+# Cobertura de testes
+coverage/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Configurações locais do editor
+.vscode/
+.idea/
