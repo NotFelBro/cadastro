@@ -5,20 +5,17 @@ node_modules/
 # Variáveis de ambiente
 .env
 .env.*
+
+# Permitir arquivo de exemplo
 !.env.example
 
 # Logs
 *.log
-logs/
 npm-debug.log*
 
 # Arquivos temporários
-tmp/
-temp/
 *.tmp
-
-# Cobertura de testes
-coverage/
+*.swp
 
 # Arquivos do sistema
 .DS_Store
@@ -26,4 +23,3 @@ Thumbs.db
 
 # Configurações locais do editor
 .vscode/
-.idea/
