@@ -32,7 +32,7 @@ app.post("/cadastro", async (req, res) => {
     typeof email !== "string" ||
     typeof senha !== "string"
   ) {
-    return res.status(400).send("Dados inválidos!");
+    return res.status(400).send("Dados de login inválidos!");
   }
 
   // 3. Validar nome e sobrenome
@@ -98,6 +98,60 @@ app.post("/cadastro", async (req, res) => {
       "Erro interno do servidor!"
     );
   }
+});
+
+app.post("/login", async (req, res) => {
+  const { email, senha } = req.body;
+
+  if (
+    typeof email !== "string" ||
+    typeof senha !== "string"
+  ) 
+
+
+try {
+  // Buscar o usuário pelo e-mail
+  const usuario = await Usuario.findOne({
+    email: emailNormalizado
+  }).select("+senhaHash");
+
+  // Comparar a senha com o hash armazenado
+  const senhaCorreta = usuario
+    ? await bcrypt.compare(senha, usuario.senhaHash)
+    : false;
+
+  // E-mail inexistente ou senha incorreta
+  if (!senhaCorreta) {
+    return res.status(401).send(
+      "E-mail ou senha incorretos!"
+    );
+  }
+
+  // Login válido
+  return res.status(200).send(
+    "Usuário encontrado!"
+  );
+
+} catch (erro) {
+  console.error("Erro ao realizar login:", erro);
+
+  return res.status(500).send(
+    "Erro interno do servidor!"
+  );
+}
+
+
+  if (!email.trim() || !senha) {
+    return res.status(400).send(
+      "E-mail e senha são obrigatórios!"
+    );
+  }
+
+  const emailNormalizado = email.trim().toLowerCase();
+
+  return res.status(200).send(
+    "Dados de login validados!"
+  );
 });
 
 // ======================================
