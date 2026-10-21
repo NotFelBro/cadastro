@@ -1,12 +1,21 @@
+
 {
-  "name": "cadastro",
+  "name": "authglass",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Sistema de cadastro e login com Node.js, Express, MongoDB e interface Glassmorphism.",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "mongoose",
+    "authentication",
+    "glassmorphism"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
