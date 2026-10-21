@@ -1,76 +1,225 @@
+
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Usuário</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#121229">
+  <meta name="description" content="Sistema de cadastro e login de usuários">
+
+  <title>AuthGlass | Cadastro e Login</title>
+
+  <link rel="stylesheet" href="/style.css">
+  <script src="/script.js" defer></script>
 </head>
+
 <body>
 
-      <h1>Cadastro de Usuário</h1>
+  <!-- Elementos decorativos do fundo -->
+  <div class="background" aria-hidden="true">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="orb orb-three"></div>
+  </div>
 
-    <form action="/cadastro" method="POST">
+  <main class="auth-container">
 
-        <label for="cadastro-nome">Nome:</label>
-        <input
-            id="cadastro-nome"
-            name="nome"
-            required
+    <section class="auth-card" aria-labelledby="auth-title">
+
+      <!-- Identidade visual -->
+      <header class="auth-header">
+        <div class="brand-icon" aria-hidden="true">✦</div>
+
+        <span class="brand-name">AuthGlass</span>
+
+        <h1 id="auth-title">Crie sua conta</h1>
+
+        <p id="auth-description">
+          Preencha os dados abaixo para começar.
+        </p>
+      </header>
+
+
+<!-- Mensagens de sucesso ou erro -->
+<div
+  id="auth-message"
+  class="auth-message"
+  role="status"
+  aria-live="polite"
+  hidden
+></div>
+
+
+      <!-- Alternância entre formulários -->
+      <div class="auth-tabs" role="group" aria-label="Escolher formulário">
+
+        <button
+          type="button"
+          class="tab-button active"
+          id="tab-cadastro"
+          aria-controls="form-cadastro"
+          aria-pressed="true"
         >
+          Cadastro
+        </button>
 
-        <label for="cadastro-sobrenome">Sobrenome:</label>
-        <input
-            id="cadastro-sobrenome"
-            name="sobrenome"
-            required
+        <button
+          type="button"
+          class="tab-button"
+          id="tab-login"
+          aria-controls="form-login"
+          aria-pressed="false"
         >
+          Login
+        </button>
 
-        <label for="cadastro-email">E-mail:</label>
-        <input
+      </div>
+
+      <!-- Formulário de cadastro -->
+      <form
+        id="form-cadastro"
+        class="auth-form"
+        action="/cadastro"
+        method="POST"
+      >
+
+        <div class="form-row">
+
+          <div class="input-group">
+            <label for="cadastro-nome">Nome</label>
+            <input
+              type="text"
+              id="cadastro-nome"
+              name="nome"
+              placeholder="Seu nome"
+              autocomplete="given-name"
+              required
+            >
+          </div>
+
+          <div class="input-group">
+            <label for="cadastro-sobrenome">Sobrenome</label>
+            <input
+              type="text"
+              id="cadastro-sobrenome"
+              name="sobrenome"
+              placeholder="Seu sobrenome"
+              autocomplete="family-name"
+              required
+            >
+          </div>
+
+        </div>
+
+        <div class="input-group">
+          <label for="cadastro-email">E-mail</label>
+          <input
+            type="email"
             id="cadastro-email"
             name="email"
+            placeholder="seuemail@exemplo.com"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="cadastro-senha">Senha</label>
+
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="cadastro-senha"
+              name="senha"
+              placeholder="Mínimo de 8 caracteres"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+
+            <button
+              type="button"
+              class="toggle-password"
+              data-target="cadastro-senha"
+              aria-label="Mostrar senha"
+              aria-pressed="false"
+            >
+              Mostrar
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-button">
+          Criar conta
+          <span aria-hidden="true">→</span>
+        </button>
+
+      </form>
+
+      <!-- Formulário de login -->
+      <form
+        id="form-login"
+        class="auth-form"
+        action="/login"
+        method="POST"
+        hidden
+      >
+
+        <div class="input-group">
+          <label for="login-email">E-mail</label>
+          <input
             type="email"
-            required
-        >
-
-        <label for="cadastro-senha">Senha:</label>
-        <input
-            id="cadastro-senha"
-            name="senha"
-            type="password"
-            minlength="8"
-            required
-        >
-
-        <button type="submit">Cadastrar</button>
-
-    </form>
-
-    <hr>
-
-    <h1>Login de Usuário</h1>
-
-    <form action="/login" method="POST">
-
-        <label for="login-email">E-mail:</label>
-        <input
             id="login-email"
             name="email"
-            type="email"
+            placeholder="seuemail@exemplo.com"
+            autocomplete="email"
             required
-        >
+          >
+        </div>
 
-        <label for="login-senha">Senha:</label>
-        <input
-            id="login-senha"
-            name="senha"
-            type="password"
-            required
-        >
+        <div class="input-group">
+          <label for="login-senha">Senha</label>
 
-        <button type="submit">Conferir acesso</button>
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="login-senha"
+              name="senha"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            >
 
-    </form>
-    
+            <button
+              type="button"
+              class="toggle-password"
+              data-target="login-senha"
+              aria-label="Mostrar senha"
+              aria-pressed="false"
+            >
+              Mostrar
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-button">
+          Entrar
+          <span aria-hidden="true">→</span>
+        </button>
+
+      </form>
+
+      <!-- Rodapé -->
+      <footer class="auth-footer">
+        <p>
+          Desenvolvido com Node.js, Express e MongoDB.
+        </p>
+      </footer>
+
+    </section>
+
+  </main>
+
 </body>
 </html>
