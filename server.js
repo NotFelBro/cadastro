@@ -7,14 +7,23 @@ const bcrypt = require("bcryptjs");
 
 const Usuario = require("./models/usuario");
 
-// Configuração do ambiente
+// ======================================
+// CONFIGURAÇÃO DO AMBIENTE
+// ======================================
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middlewares
+// ======================================
+// MIDDLEWARES
+// ======================================
+
+// Receber dados dos formulários HTML
 app.use(express.urlencoded({ extended: false }));
+
+// Disponibilizar arquivos da pasta public
 app.use(express.static(path.join(__dirname, "public")));
 
 // ======================================
@@ -22,17 +31,19 @@ app.use(express.static(path.join(__dirname, "public")));
 // ======================================
 
 app.post("/cadastro", async (req, res) => {
-  // 1. Receber os dados do formulário
+  // 1. Receber os dados
   const { nome, sobrenome, email, senha } = req.body;
 
-  // 2. Validar os tipos dos campos
+  // 2. Validar os tipos
   if (
     typeof nome !== "string" ||
     typeof sobrenome !== "string" ||
     typeof email !== "string" ||
     typeof senha !== "string"
   ) {
-    return res.status(400).send("Dados de login inválidos!");
+    return res.status(400).send(
+      "Dados de cadastro inválidos!"
+    );
   }
 
   // 3. Validar nome e sobrenome
@@ -45,33 +56,35 @@ app.post("/cadastro", async (req, res) => {
   // 4. Normalizar o e-mail
   const emailNormalizado = email.trim().toLowerCase();
 
-  // Verificar o formato do e-mail
+  // Validar formato do e-mail
   const emailValido =
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado);
 
   if (!emailValido) {
-    return res.status(400).send("E-mail inválido!");
+    return res.status(400).send(
+      "E-mail inválido!"
+    );
   }
 
-  // 5. Validar a senha
+  // 5. Validar tamanho mínimo da senha
   if (senha.length < 8) {
     return res.status(400).send(
       "A senha deve ter pelo menos 8 caracteres!"
     );
   }
 
-  // Verificar o limite de 72 bytes
+  // Verificar limite de 72 bytes do bcrypt
   if (bcrypt.truncates(senha)) {
     return res.status(400).send(
       "A senha ultrapassa o limite de 72 bytes!"
     );
   }
 
-  // 6. Gerar hash e salvar no MongoDB
   try {
+    // 6. Gerar o hash da senha
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    // 7. Criar o usuário no banco
+    // 7. Salvar o usuário no MongoDB
     await Usuario.create({
       nome: nome.trim(),
       sobrenome: sobrenome.trim(),
@@ -79,20 +92,20 @@ app.post("/cadastro", async (req, res) => {
       senhaHash
     });
 
-    // 8. Resposta de sucesso
+    // 8. Responder com sucesso
     return res.status(201).send(
       "Usuário cadastrado com sucesso!"
     );
 
   } catch (erro) {
-    // Verificar e-mail duplicado
+    // E-mail duplicado
     if (erro.code === 11000) {
       return res.status(409).send(
         "Este e-mail já está cadastrado!"
       );
     }
 
-    console.error(erro);
+    console.error("Erro ao cadastrar usuário:", erro);
 
     return res.status(500).send(
       "Erro interno do servidor!"
@@ -100,58 +113,64 @@ app.post("/cadastro", async (req, res) => {
   }
 });
 
+// ======================================
+// ROTA DE LOGIN
+// ======================================
+
 app.post("/login", async (req, res) => {
+  // 1. Receber os dados do formulário
   const { email, senha } = req.body;
 
+  // 2. Validar os tipos
   if (
     typeof email !== "string" ||
     typeof senha !== "string"
-  ) 
-
-
-try {
-  // Buscar o usuário pelo e-mail
-  const usuario = await Usuario.findOne({
-    email: emailNormalizado
-  }).select("+senhaHash");
-
-  // Comparar a senha com o hash armazenado
-  const senhaCorreta = usuario
-    ? await bcrypt.compare(senha, usuario.senhaHash)
-    : false;
-
-  // E-mail inexistente ou senha incorreta
-  if (!senhaCorreta) {
-    return res.status(401).send(
-      "E-mail ou senha incorretos!"
+  ) {
+    return res.status(400).send(
+      "Dados de login inválidos!"
     );
   }
 
-  // Login válido
-  return res.status(200).send(
-    "Usuário encontrado!"
-  );
-
-} catch (erro) {
-  console.error("Erro ao realizar login:", erro);
-
-  return res.status(500).send(
-    "Erro interno do servidor!"
-  );
-}
-
-
+  // 3. Verificar campos obrigatórios
   if (!email.trim() || !senha) {
     return res.status(400).send(
       "E-mail e senha são obrigatórios!"
     );
   }
 
+  // 4. Normalizar o e-mail
   const emailNormalizado = email.trim().toLowerCase();
 
-  return res.status(200).send(
-    "Dados de login validados!"
-  );
+  try {
+    // 5. Buscar o usuário no MongoDB
+    const usuario = await Usuario.findOne({
+      email: emailNormalizado
+    }).select("+senhaHash");
+
+    // 6. Comparar a senha com o hash
+    const senhaCorreta = usuario
+      ? await bcrypt.compare(senha, usuario.senhaHash)
+      : false;
+
+    // 7. Credenciais incorretas
+    if (!senhaCorreta) {
+      return res.status(401).send(
+        "E-mail ou senha incorretos!"
+      );
+    }
+
+    // 8. Login válido
+    return res.status(200).send(
+      "Usuário encontrado!"
+    );
+
+  } catch (erro) {
+    console.error("Erro ao realizar login:", erro);
+
+    return res.status(500).send(
+      "Erro interno do servidor!"
+    );
+  }
 });
 
 // ======================================
@@ -165,10 +184,10 @@ async function iniciar() {
 
     console.log("MongoDB conectado!");
 
-    // Aguardar a criação dos índices
+    // Aguardar a criação do índice único
     await Usuario.init();
 
-    // Iniciar o Express
+    // Iniciar o servidor Express
     app.listen(PORT, () => {
       console.log(
         `Servidor rodando em http://localhost:${PORT}`
